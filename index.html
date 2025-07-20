@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malla Ingeniería Civil Industrial UFRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-light: #fdf6f9;
+            --text-light: #333;
+            --accent-light: #eac6d1;
+            --bg-dark: #1e1e1e;
+            --text-dark: #ddd;
+            --accent-dark: #955;
+        }
+        .light {
+            background-color: var(--bg-light);
+            color: var(--text-light);
+        }
+        .dark {
+            background-color: var(--bg-dark);
+            color: var(--text-dark);
+        }
+        .level {
+            background-color: var(--accent-light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+        .dark .level {
+            background-color: var(--accent-dark);
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #4B1535;
+        }
+    </style>
+</head>
+<body class="light p-10 font-sans">
+    <header class="mb-6">
+        <h1 class="text-4xl font-bold mb-2">Malla Ingeniería Civil Industrial UFRO</h1>
+        <button onclick="toggleMode()" class="mb-4 px-4 py-2 border rounded">Cambiar a Modo Oscuro / Claro</button>
+        <p class="text-sm">Ingreso 2024 - Estado: <span id="estado">A tiempo</span></p>
+        <p class="text-sm">Avance: <span id="progreso">0%</span> | Promedio: <span id="promedio">0.0</span></p>
+    </header>
+
+    <main id="malla" class="grid grid-cols-6 gap-4"></main>
+
+    <script>
+        let modo = 'light';
+        function toggleMode() {
+            modo = modo === 'light' ? 'dark' : 'light';
+            document.body.className = modo + ' p-10 font-sans';
+        }
+
+        const niveles = {
+            1: ['Precálculo I (4 SCT)', 'Álgebra (4 SCT)'],
+            2: ['Precálculo II (4 SCT)', 'Cálculo Diferencial (4 SCT)'],
+            3: ['Cálculo Integral (4 SCT)', 'Álgebra Lineal (4 SCT)'],
+            4: ['Física I (5 SCT)', 'Taller de Programación (3 SCT)'],
+            5: ['Investigación de Operaciones (5 SCT)', 'Gestión Ambiental (4 SCT)'],
+            6: ['Economía y Finanzas (5 SCT)', 'Diseño Integral de Productos (4 SCT)'],
+            7: ['Gestión de Operaciones (5 SCT)', 'Modelos Estocásticos (5 SCT)'],
+            8: ['Logística y Cadenas (5 SCT)', 'Tecnología de Manufactura (5 SCT)'],
+            9: ['Inteligencia de Negocios (5 SCT)', 'Gestión de la Calidad (5 SCT)'],
+            10: ['Taller de Modelado (5 SCT)', 'Taller de Emprendimiento (5 SCT)'],
+            11: ['Actividad de Titulación (29 SCT)']
+        };
+
+        let total = 0;
+        let completados = 0;
+        let notas = [];
+        const malla = document.getElementById('malla');
+
+        for (let i = 1; i <= 11; i++) {
+            const div = document.createElement('div');
+            div.className = 'level';
+            div.innerHTML = `<h2 class="font-bold mb-2">Nivel ${i}</h2>`;
+            niveles[i].forEach(r => {
+                const p = document.createElement('p');
+                p.className = 'cursor-pointer hover:underline';
+                p.textContent = r;
+                p.onclick = () => aprobar(p);
+                div.appendChild(p);
+                total++;
+            });
+            malla.appendChild(div);
+        }
+
+        function aprobar(elemento) {
+            if (elemento.classList.contains('completed')) return;
+            const nota = prompt('¿Con qué nota aprobaste?');
+            if (!nota || isNaN(nota)) return;
+            elemento.innerHTML += ` <small>(${nota})</small>`;
+            elemento.classList.add('completed');
+            completados++;
+            notas.push(parseFloat(nota));
+            actualizar();
+        }
+
+        function actualizar() {
+            const porcentaje = Math.round((completados / total) * 100);
+            document.getElementById('progreso').innerText = `${porcentaje}%`;
+            const promedio = notas.length ? (notas.reduce((a, b) => a + b, 0) / notas.length).toFixed(1) : 0;
+            document.getElementById('promedio').innerText = promedio;
+            document.getElementById('estado').innerText = completados >= total ? 'Finalizado' : 'A tiempo';
+        }
+    </script>
+</body>
+</html>
